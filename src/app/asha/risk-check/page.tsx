@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Activity, Baby, CloudRain, HeartPulse, Brain, AlertCircle, PhoneCall, CheckCircle2, ArrowLeft, Sparkles, RefreshCw } from 'lucide-react';
+import { Search, Activity, Baby, CloudRain, HeartPulse, Brain, AlertCircle, PhoneCall, CheckCircle2, ArrowLeft, Sparkles, RefreshCw, MessageCircleHeart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getTranslations } from '@/lib/translations';
 

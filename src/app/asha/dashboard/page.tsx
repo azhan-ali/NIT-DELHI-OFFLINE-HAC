@@ -6,7 +6,7 @@ import { UserPlus, Activity, Brain, Users, Search, AlertCircle, LogOut, Medal, M
 import { useRouter } from 'next/navigation';
 
 const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.08 } } };
-const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } };
+const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } } };
 
 // ── 5 fake patients (pre-seeded) ─────────────────────────────────────────────
 const FAKE_PATIENTS = [

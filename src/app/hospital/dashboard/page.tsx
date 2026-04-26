@@ -11,7 +11,7 @@ import {
 import { useRouter } from 'next/navigation';
 
 const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.07 } } };
-const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } } };
+const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } } };
 
 // ─── OT PREP MODAL ─────────────────────────────────────────────────────────
 function OTPrepModal({ patient, onClose }: { patient: any; onClose: () => void }) {
