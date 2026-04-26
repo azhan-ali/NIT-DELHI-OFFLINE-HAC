@@ -879,3 +879,240 @@ body.sketch-theme::before {
   pointer-events: none;
   z-index: 0;
 }
+
+
+/* ╔══════════════════════════════════════════════════════════════╗
+   ║   HYPER-PREMIUM LIGHT THEME — V3 (High-Selling / Creative)    ║
+   ╚══════════════════════════════════════════════════════════════╝ */
+
+/* ── 1. Animated Stripe-like Aurora Background ─────────────────── */
+body.light-theme {
+  background-color: #fafafa !important;
+  /* Complex glowing mesh gradient */
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, transparent 50%), 
+    radial-gradient(at 50% 0%, hsla(225,39%,30%,0) 0, transparent 50%), 
+    radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, transparent 50%);
+  background-attachment: fixed;
+  color: #0b0f19 !important;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* We create an animated Aurora / Mesh overlay on the body pseudo-element */
+body.light-theme::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.16), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.12), transparent 25%),
+    radial-gradient(circle at 50% 80%, rgba(56, 189, 248, 0.16), transparent 25%),
+    radial-gradient(circle at 20% 90%, rgba(20, 184, 166, 0.12), transparent 25%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.16), transparent 25%);
+  background-size: 150% 150%;
+  animation: hyper-mesh-move 20s ease-in-out infinite alternate;
+  filter: blur(60px);
+}
+
+/* Add a very subtle film-grain / noise texture for an Apple-like matte finish */
+body.light-theme::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.25;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+@keyframes hyper-mesh-move {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(5%, -5%) scale(1.05); }
+  66% { transform: translate(-2%, 6%) scale(0.95); }
+  100% { transform: translate(-6%, -2%) scale(1.02); }
+}
+
+/* ── 2. Page Root transparent resets ───────────────────────────── */
+.light-theme [class*="min-h-screen"],
+.light-theme div[class*="bg-[#0"],
+.light-theme div[class*="bg-[#1"] {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* ── 3. Ultra-Premium Glassmorphism Cards ──────────────────────── */
+.light-theme .glass-card {
+  background: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(35px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(35px) saturate(200%) !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  /* Glowing inner top edge and soft, deep ambient shadow */
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 1),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.4),
+    0 10px 30px rgba(0, 0, 0, 0.03),
+    0 1px 3px rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.light-theme .glass-card:hover {
+  background: rgba(255, 255, 255, 0.8) !important;
+  transform: translateY(-4px) scale(1.005) !important;
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 1),
+    0 25px 50px rgba(0, 0, 0, 0.06),
+    0 8px 16px rgba(0, 0, 0, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 1) !important;
+}
+
+/* Subtle gloss shine sweeping across on hover */
+.light-theme .glass-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -150%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-20deg);
+  transition: none;
+  z-index: 10;
+  pointer-events: none;
+}
+.light-theme .glass-card:hover::before {
+  left: 200%;
+  transition: left 0.8s ease-in-out;
+}
+
+/* ── 4. Vibrant Typography & Accents ───────────────────────────── */
+.light-theme .text-white       { color: #0f172a !important; }
+.light-theme .text-slate-200   { color: #1e293b !important; }
+.light-theme .text-slate-300   { color: #334155 !important; }
+.light-theme .text-slate-400   { color: #475569 !important; }
+.light-theme .text-slate-500   { color: #64748b !important; }
+
+/* Keep colors deeply saturated that "pop" over glass */
+.light-theme .text-indigo-400  { color: #4f46e5 !important; }
+.light-theme .text-indigo-300  { color: #6366f1 !important; }
+.light-theme .text-emerald-400 { color: #059669 !important; }
+.light-theme .text-emerald-300 { color: #10b981 !important; }
+.light-theme .text-rose-400    { color: #e11d48 !important; }
+.light-theme .text-amber-400   { color: #d97706 !important; }
+.light-theme .text-amber-300   { color: #f59e0b !important; }
+.light-theme .text-purple-400  { color: #7e22ce !important; }
+.light-theme .text-cyan-400    { color: #0891b2 !important; }
+
+/* Let headings that use bg-clip-text gradient have a truly magical gradient */
+.light-theme .bg-clip-text {
+  background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 40%, #db2777 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* ── 5. Gorgeous Light Borders ─────────────────────────────────── */
+.light-theme [class*="border-white/"],
+.light-theme [class*="border-slate-800"] { 
+  border-color: rgba(99, 102, 241, 0.10) !important; 
+}
+.light-theme [class*="border-rose-500/"]   { border-color: rgba(225, 29, 72, 0.15) !important; }
+.light-theme [class*="border-indigo-500/"] { border-color: rgba(79, 70, 229, 0.15) !important; }
+.light-theme [class*="border-emerald-500/"]{ border-color: rgba(5, 150, 105, 0.15) !important; }
+.light-theme [class*="border-amber-500/"]  { border-color: rgba(217, 119, 6, 0.15) !important; }
+
+/* ── 6. Input & Controls (Sleek Apple style) ───────────────────── */
+.light-theme input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]),
+.light-theme select,
+.light-theme textarea {
+  background: rgba(255, 255, 255, 0.7) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 12px !important;
+  color: #0f172a !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(255,255,255,0.5) !important;
+  transition: all 0.2s ease !important;
+  backdrop-filter: blur(10px);
+}
+.light-theme input:focus:not([type="checkbox"]),
+.light-theme textarea:focus {
+  background: rgba(255, 255, 255, 1) !important;
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15) !important;
+  outline: none !important;
+}
+.light-theme input::placeholder,
+.light-theme textarea::placeholder { color: #94a3b8 !important; }
+
+/* ── 7. Orbs & Background Floats (Vivid Multiply effect) ───────── */
+.light-theme .animate-float-slow,
+.light-theme .animate-float-medium {
+  opacity: 0.6 !important;
+  filter: blur(80px) saturate(200%) !important;
+  mix-blend-mode: multiply !important;
+  z-index: -1;
+}
+
+/* ── 8. Pastel Tint Backgrounds (High Contrast/Soft Bg) ───────── */
+.light-theme [class*="bg-emerald-500/"]  { background-color: rgba(16, 185, 129, 0.12) !important; }
+.light-theme [class*="bg-rose-500/"]     { background-color: rgba(244, 63, 94, 0.12) !important; }
+.light-theme [class*="bg-amber-500/"]    { background-color: rgba(245, 158, 11, 0.12) !important; }
+.light-theme [class*="bg-indigo-500/"]   { background-color: rgba(99, 102, 241, 0.12) !important; }
+.light-theme [class*="bg-blue-500/"]     { background-color: rgba(59, 130, 246, 0.12) !important; }
+
+/* ── 9. Overriding Dark Modal / Section panels ────────────────── */
+.light-theme [class*="bg-slate-800"],
+.light-theme [class*="bg-slate-900"],
+.light-theme [class*="bg-[#0a0d18]"],
+.light-theme [class*="bg-black/"],
+.light-theme .bg-black {
+  background-color: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(255,255,255,1) !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+}
+
+.light-theme .fixed[class*="bg-black/"] {
+  background: rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* ── 10. Shimmer, Glow & Micro-interactions ───────────────────── */
+.light-theme .animate-shimmer-line {
+  background: linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent) !important;
+  opacity: 0.8 !important;
+}
+
+@keyframes hyper-pulse {
+  0%, 100% { filter: blur(60px) saturate(2); opacity: 0.5; }
+  50%       { filter: blur(80px) saturate(2.5); opacity: 0.8; }
+}
+.light-theme .animate-pulse-glow {
+  animation: hyper-pulse 4s ease-in-out infinite !important;
+}
+
+/* Premium Primary Buttons */
+.light-theme button[class*="bg-gradient-to-r"],
+.light-theme button[class*="bg-indigo-600"],
+.light-theme button[class*="bg-emerald-600"] {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255,255,255,0.3) !important;
+  transition: all 0.3s ease !important;
+  border: none !important;
+}
+.light-theme button[class*="bg-gradient-to-r"]:hover,
+.light-theme button[class*="bg-indigo-600"]:hover,
+.light-theme button[class*="bg-emerald-600"]:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.25), inset 0 1px 1px rgba(255,255,255,0.4) !important;
+}
+
+/* Toggle Colors */
+.light-theme .bg-emerald-500  { background-color: #10b981 !important; color: white !important; }
+.light-theme .bg-amber-500    { background-color: #f59e0b !important; color: white !important; }
+.light-theme .bg-rose-500     { background-color: #f43f5e !important; color: white !important; }
+
+/* Animated Border Glow for active/selected items */
+.light-theme .ring-2.ring-indigo-500 {
+  ring-color: #6366f1 !important;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2) !important;
+}
