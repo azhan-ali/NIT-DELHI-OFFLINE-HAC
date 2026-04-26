@@ -1,17 +1,11 @@
 import type { Metadata } from "next";
-import { Caveat, Patrick_Hand } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const caveat = Caveat({
-  variable: "--font-sketch-heading",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const patrickHand = Patrick_Hand({
-  variable: "--font-sketch-body",
-  subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -27,9 +21,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${caveat.variable} ${patrickHand.variable} h-full`}
+      className={`${inter.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col sketch-theme">{children}</body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

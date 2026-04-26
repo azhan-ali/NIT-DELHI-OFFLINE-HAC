@@ -8,8 +8,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-mono: ui-monospace, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -117,6 +116,21 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* ============================================================
+   HAND-DRAWN SKETCH THEME — GLOBAL OVERRIDES
+   ============================================================ */
+
+/* SVG filter for wobbly hand-drawn effect — injected once */
+body.sketch-theme::before {
+  content: '';
+  position: fixed;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  z-index: -999;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='0' height='0'%3E%3Cdefs%3E%3Cfilter id='sketch-wobble'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.015' numOctaves='3' seed='2' result='turbulence'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='turbulence' scale='3' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Cfilter id='pencil-texture'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch' result='noise'/%3E%3CfeColorMatrix type='saturate' values='0' in='noise' result='greyNoise'/%3E%3CfeBlend in='SourceGraphic' in2='greyNoise' mode='multiply' result='blended'/%3E%3CfeComponentTransfer in='blended'%3E%3CfeFuncA type='linear' slope='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3C/defs%3E%3C/svg%3E");
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -125,14 +139,669 @@
     @apply bg-background text-foreground;
   }
   html {
-    @apply font-sans;
     scroll-behavior: smooth;
   }
 }
 
-/* ===== PREMIUM ANIMATION SYSTEM ===== */
+/* ═══════════════════════════════════════════
+   SKETCH FONT SYSTEM
+   ═══════════════════════════════════════════ */
 
-/* Floating Orb Animations */
+.sketch-theme {
+  font-family: var(--font-sketch-body), 'Patrick Hand', 'Comic Sans MS', cursive !important;
+  letter-spacing: 0.02em;
+}
+
+.sketch-theme h1,
+.sketch-theme h2,
+.sketch-theme h3,
+.sketch-theme h4 {
+  font-family: var(--font-sketch-heading), 'Caveat', 'Segoe Script', cursive !important;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+
+.sketch-theme h1 { font-weight: 700; }
+.sketch-theme h2 { font-weight: 600; }
+
+/* Make bold text look hand-drawn */
+.sketch-theme .font-bold,
+.sketch-theme .font-black {
+  font-family: var(--font-sketch-heading), 'Caveat', cursive !important;
+}
+
+/* ═══════════════════════════════════════════
+   🎨 PAPER BACKGROUND — FORCE OVERRIDE
+   ALL dark bg classes on every page
+   ═══════════════════════════════════════════ */
+
+/* The warm cream paper base */
+.sketch-theme,
+.sketch-theme > *,
+.sketch-theme div[class*="bg-[#0"],
+.sketch-theme div[class*="bg-[#1"],
+.sketch-theme div[class*="min-h-screen"] {
+  background-color: #faf6ee !important;
+  color: #2c2416 !important;
+}
+
+/* Paper grain texture overlay — FULL PAGE */
+.sketch-theme {
+  background-image:
+    /* Notebook ruled lines */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 31px,
+      rgba(160, 185, 220, 0.18) 31px,
+      rgba(160, 185, 220, 0.18) 32px
+    ),
+    /* Red margin line */
+    linear-gradient(
+      90deg,
+      transparent 58px,
+      rgba(210, 110, 110, 0.2) 58px,
+      rgba(210, 110, 110, 0.2) 60px,
+      transparent 60px
+    ),
+    /* Paper fiber noise */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.035'/%3E%3C/svg%3E") !important;
+  background-color: #faf6ee !important;
+  background-attachment: fixed !important;
+}
+
+/* Coffee stain rings — decorative fixed marks on the paper */
+.sketch-theme::after {
+  content: '';
+  position: fixed;
+  width: 120px;
+  height: 120px;
+  top: 15%;
+  right: 8%;
+  border-radius: 50%;
+  border: 3px solid rgba(160, 120, 70, 0.08);
+  box-shadow:
+    inset 0 0 20px rgba(160, 120, 70, 0.05),
+    4px 4px 0 rgba(160, 120, 70, 0.04);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════
+   INK & TEXT COLOR OVERRIDES
+   Dark text on warm paper
+   ═══════════════════════════════════════════ */
+
+/* Override ALL light text to dark ink */
+.sketch-theme .text-white { color: #1a1208 !important; }
+.sketch-theme .text-slate-200 { color: #2c2416 !important; }
+.sketch-theme .text-slate-300 { color: #3d321e !important; }
+.sketch-theme .text-slate-400 { color: #5c4d36 !important; }
+.sketch-theme .text-slate-500 { color: #7a6b52 !important; }
+.sketch-theme .text-slate-600 { color: #998a72 !important; }
+.sketch-theme .text-slate-700 { color: #b0a490 !important; }
+
+/* Colored accents → richer saturated ink versions */
+.sketch-theme .text-indigo-400 { color: #3b3fc7 !important; }
+.sketch-theme .text-indigo-300 { color: #4f52d4 !important; }
+.sketch-theme .text-indigo-200 { color: #3b3fc7 !important; }
+.sketch-theme .text-emerald-400 { color: #157a3e !important; }
+.sketch-theme .text-emerald-300 { color: #1a8e48 !important; }
+.sketch-theme .text-rose-400 { color: #c4233a !important; }
+.sketch-theme .text-rose-300 { color: #d43a50 !important; }
+.sketch-theme .text-rose-200 { color: #c4233a !important; }
+.sketch-theme .text-amber-400 { color: #b47a15 !important; }
+.sketch-theme .text-amber-300 { color: #c48c22 !important; }
+.sketch-theme .text-amber-500 { color: #a06a08 !important; }
+.sketch-theme .text-orange-400 { color: #c25d10 !important; }
+.sketch-theme .text-orange-500 { color: #b34f08 !important; }
+.sketch-theme .text-orange-200 { color: #c25d10 !important; }
+.sketch-theme .text-blue-400 { color: #2563c0 !important; }
+.sketch-theme .text-purple-400 { color: #7c3aed !important; }
+.sketch-theme .text-red-400 { color: #c72020 !important; }
+.sketch-theme .text-red-500 { color: #b91c1c !important; }
+.sketch-theme .text-yellow-400 { color: #a06a08 !important; }
+
+/* ═══════════════════════════════════════════
+   CARD / CONTAINER BACKGROUND OVERRIDES
+   Glass → Paper scraps
+   ═══════════════════════════════════════════ */
+
+/* Override dark card backgrounds */
+.sketch-theme .bg-slate-800,
+.sketch-theme .bg-slate-900,
+.sketch-theme [class*="bg-slate-800"],
+.sketch-theme [class*="bg-slate-900"],
+.sketch-theme [class*="bg-slate-950"] {
+  background-color: rgba(220, 210, 190, 0.3) !important;
+}
+
+/* Override inline dark backgrounds on nested containers */
+.sketch-theme [class*="bg-[#0a"],
+.sketch-theme [class*="bg-[#05"],
+.sketch-theme [class*="bg-[#03"],
+.sketch-theme [class*="bg-[#08"],
+.sketch-theme [class*="bg-[#0d"],
+.sketch-theme [class*="bg-[#0c"] {
+  background-color: #faf6ee !important;
+}
+
+/* Colored tint overrides — lighten for paper aesthetic */
+.sketch-theme [class*="bg-rose-500/"],
+.sketch-theme [class*="bg-rose-950"] {
+  background-color: rgba(200, 60, 80, 0.08) !important;
+}
+.sketch-theme [class*="bg-indigo-500/"],
+.sketch-theme [class*="bg-indigo-950"],
+.sketch-theme [class*="bg-indigo-600"] {
+  background-color: rgba(67, 56, 202, 0.12) !important;
+}
+.sketch-theme [class*="bg-emerald-500/"] {
+  background-color: rgba(16, 140, 70, 0.08) !important;
+}
+.sketch-theme [class*="bg-amber-500/"] {
+  background-color: rgba(190, 130, 20, 0.08) !important;
+}
+.sketch-theme [class*="bg-orange-500/"],
+.sketch-theme [class*="bg-orange-600/"] {
+  background-color: rgba(200, 100, 20, 0.08) !important;
+}
+.sketch-theme [class*="bg-purple-500/"] {
+  background-color: rgba(124, 58, 237, 0.08) !important;
+}
+.sketch-theme [class*="bg-blue-500/"] {
+  background-color: rgba(37, 99, 235, 0.08) !important;
+}
+.sketch-theme [class*="bg-red-500/"] {
+  background-color: rgba(200, 40, 40, 0.08) !important;
+}
+
+/* ═══════════════════════════════════════════
+   GRADIENT BUTTONS → Solid marker fill
+   ═══════════════════════════════════════════ */
+
+.sketch-theme [class*="bg-gradient-to-r"][class*="from-indigo"] {
+  background: #4338ca !important;
+  color: #faf6ee !important;
+}
+.sketch-theme [class*="bg-gradient-to-r"][class*="from-rose"],
+.sketch-theme [class*="bg-gradient-to-r"][class*="from-red"] {
+  background: #c4233a !important;
+  color: #faf6ee !important;
+}
+.sketch-theme [class*="bg-gradient-to-r"][class*="from-emerald"] {
+  background: #157a3e !important;
+  color: #faf6ee !important;
+}
+.sketch-theme [class*="bg-gradient-to-r"][class*="from-amber"] {
+  background: #b47a15 !important;
+  color: #faf6ee !important;
+}
+.sketch-theme [class*="bg-gradient-to-r"][class*="from-orange"] {
+  background: #c25d10 !important;
+  color: #faf6ee !important;
+}
+.sketch-theme [class*="bg-gradient-to-r"][class*="from-purple"] {
+  background: #7c3aed !important;
+  color: #faf6ee !important;
+}
+.sketch-theme [class*="bg-gradient-to-br"][class*="from-indigo"],
+.sketch-theme [class*="bg-gradient-to-br"][class*="from-amber"],
+.sketch-theme [class*="bg-gradient-to-br"][class*="from-orange"],
+.sketch-theme [class*="bg-gradient-to-br"][class*="from-emerald"],
+.sketch-theme [class*="bg-gradient-to-br"][class*="from-rose"] {
+  background: transparent !important;
+}
+
+/* Gradient text → solid dark ink */
+.sketch-theme .bg-clip-text {
+  -webkit-text-fill-color: #1a1208 !important;
+  background: none !important;
+}
+
+/* ═══════════════════════════════════════════
+   FLOATING ORBS → WATERCOLOR INK BLOTS
+   ═══════════════════════════════════════════ */
+
+.sketch-theme [class*="bg-indigo-600/"],
+.sketch-theme [class*="bg-purple-600/"],
+.sketch-theme [class*="bg-emerald-600/"],
+.sketch-theme [class*="bg-amber-600/"],
+.sketch-theme [class*="bg-orange-600/"],
+.sketch-theme [class*="bg-red-600/"],
+.sketch-theme [class*="bg-amber-500/6"],
+.sketch-theme [class*="bg-rose-500/6"],
+.sketch-theme [class*="bg-rose-900/"],
+.sketch-theme [class*="bg-indigo-900/"],
+.sketch-theme [class*="bg-yellow-600/"] {
+  opacity: 0.15 !important;
+  mix-blend-mode: multiply !important;
+}
+
+/* ═══════════════════════════════════════════
+   BORDER COLOR OVERRIDES — ink on paper
+   ═══════════════════════════════════════════ */
+
+.sketch-theme [class*="border-white/"] {
+  border-color: rgba(100, 80, 50, 0.15) !important;
+}
+.sketch-theme [class*="border-rose-500/"] { border-color: rgba(200, 60, 80, 0.25) !important; }
+.sketch-theme [class*="border-indigo-500/"] { border-color: rgba(67, 56, 202, 0.25) !important; }
+.sketch-theme [class*="border-emerald-500/"] { border-color: rgba(16, 140, 70, 0.25) !important; }
+.sketch-theme [class*="border-amber-500/"] { border-color: rgba(190, 130, 20, 0.25) !important; }
+.sketch-theme [class*="border-orange-500/"] { border-color: rgba(200, 100, 20, 0.25) !important; }
+.sketch-theme [class*="border-purple-500/"] { border-color: rgba(124, 58, 237, 0.25) !important; }
+.sketch-theme [class*="border-blue-500/"] { border-color: rgba(37, 99, 235, 0.25) !important; }
+.sketch-theme [class*="border-red-500/"] { border-color: rgba(200, 40, 40, 0.25) !important; }
+
+/* ═══════════════════════════════════════════
+   SHADOW OVERRIDES — pencil shadows on paper
+   ═══════════════════════════════════════════ */
+
+.sketch-theme [class*="shadow-[0_0_"] {
+  box-shadow: 3px 3px 0 rgba(80, 60, 30, 0.12) !important;
+}
+
+/* ═══════════════════════════════════════════
+   FIXED BG OVERLAY → transparent on paper
+   ═══════════════════════════════════════════ */
+
+.sketch-theme .fixed[class*="inset-0"][class*="pointer-events-none"] {
+  background: transparent !important;
+}
+
+/* ═══════════════════════════════════════════
+   MODAL BACKDROP → frosted paper
+   ═══════════════════════════════════════════ */
+
+.sketch-theme .fixed[class*="bg-black/"],
+.sketch-theme .fixed[class*="bg-black"] {
+  background: rgba(240, 235, 220, 0.75) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Modal content cards  */
+.sketch-theme .fixed [class*="bg-[#0"] {
+  background-color: #f5eeda !important;
+  border: 2.5px dashed rgba(100, 80, 50, 0.2) !important;
+}
+
+/* ═══════════════════════════════════════════
+   INPUT OVERRIDES — lined notebook paper
+   ═══════════════════════════════════════════ */
+
+.sketch-theme textarea,
+.sketch-theme input[type="text"],
+.sketch-theme input[type="number"],
+.sketch-theme input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]) {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 26px,
+    rgba(140, 170, 210, 0.2) 26px,
+    rgba(140, 170, 210, 0.2) 27px
+  ) !important;
+  background-color: rgba(255, 253, 245, 0.6) !important;
+  color: #2c2416 !important;
+  font-family: var(--font-sketch-body), 'Patrick Hand', cursive !important;
+  font-size: 15px !important;
+  border: 1.5px dashed rgba(100, 80, 50, 0.2) !important;
+}
+
+.sketch-theme textarea::placeholder,
+.sketch-theme input::placeholder {
+  color: rgba(100, 80, 50, 0.4) !important;
+}
+
+/* ═══════════════════════════════════════════
+   ANIMATE PULSE — slower, subtler on paper
+   ═══════════════════════════════════════════ */
+
+.sketch-theme .animate-pulse {
+  animation-duration: 2.5s !important;
+}
+
+/* ═══════════════════════════════════════════
+   WOBBLY / ORGANIC BORDERS
+   ═══════════════════════════════════════════ */
+
+/* Override all rounded corners to irregular sketch borders */
+.sketch-theme .rounded-full {
+  border-radius: 47% 53% 49% 51% / 52% 48% 52% 48% !important;
+}
+
+.sketch-theme .rounded-3xl,
+.sketch-theme .rounded-2xl {
+  border-radius: 12px 18px 14px 20px / 16px 12px 22px 14px !important;
+}
+
+.sketch-theme .rounded-xl {
+  border-radius: 8px 14px 10px 16px / 12px 8px 14px 10px !important;
+}
+
+.sketch-theme .rounded-lg,
+.sketch-theme .rounded-md {
+  border-radius: 6px 10px 8px 12px / 10px 6px 12px 8px !important;
+}
+
+/* Dashed / hand-drawn border style for cards */
+.sketch-theme .glass-card {
+  background: rgba(255, 250, 235, 0.5) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 2px dashed rgba(120, 100, 60, 0.2) !important;
+  box-shadow:
+    3px 3px 0px rgba(100, 80, 40, 0.1),
+    inset 0 0 20px rgba(255, 248, 230, 0.3) !important;
+  position: relative;
+}
+
+/* Pencil underline effect on headings */
+.sketch-theme h1::after,
+.sketch-theme h2::after {
+  content: '';
+  display: block;
+  width: 80%;
+  height: 3px;
+  margin-top: 4px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    currentColor 5%,
+    currentColor 15%,
+    transparent 16%,
+    transparent 20%,
+    currentColor 21%,
+    currentColor 80%,
+    transparent 81%,
+    transparent 85%,
+    currentColor 86%,
+    currentColor 95%,
+    transparent 100%
+  );
+  opacity: 0.2;
+  border-radius: 2px;
+}
+
+/* Highlighter marker effect on badges */
+.sketch-theme [class*="bg-rose-500\/"],
+.sketch-theme [class*="bg-emerald-500\/"],
+.sketch-theme [class*="bg-amber-500\/"],
+.sketch-theme [class*="bg-indigo-500\/"] {
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════
+   SKETCH BUTTONS — Playful imperfection
+   ═══════════════════════════════════════════ */
+
+.sketch-theme button {
+  font-family: var(--font-sketch-body), 'Patrick Hand', cursive !important;
+  letter-spacing: 0.03em;
+  transform: rotate(var(--sketch-tilt, 0deg));
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* Alternate buttons get tiny tilts */
+.sketch-theme button:nth-child(odd)  { --sketch-tilt: -0.5deg; }
+.sketch-theme button:nth-child(even) { --sketch-tilt: 0.7deg; }
+.sketch-theme button:hover {
+  --sketch-tilt: 0deg;
+  box-shadow: 4px 4px 0px rgba(0,0,0,0.2) !important;
+}
+.sketch-theme button:active {
+  transform: rotate(0deg) translate(2px, 2px) !important;
+  box-shadow: 1px 1px 0px rgba(0,0,0,0.1) !important;
+}
+
+/* Primary gradient buttons → solid marker fill */
+.sketch-theme button[class*="bg-gradient-to"],
+.sketch-theme button[class*="bg-indigo-600"],
+.sketch-theme button[class*="bg-emerald-600"],
+.sketch-theme button[class*="bg-rose-500"],
+.sketch-theme button[class*="bg-amber-500"] {
+  border: 2.5px solid currentColor !important;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* ═══════════════════════════════════════════
+   SKETCH CARDS — Notebook feel
+   ═══════════════════════════════════════════ */
+
+/* Add subtle tape/pin effect to top-left of important cards */
+.sketch-theme .glass-card::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 16px;
+  width: 30px;
+  height: 12px;
+  background: rgba(245, 208, 80, 0.3);
+  border-radius: 0 0 4px 4px;
+  z-index: 5;
+  border: 1px solid rgba(245, 208, 80, 0.2);
+  border-top: none;
+}
+
+/* Second tape strip for variety */
+.sketch-theme .glass-card:nth-child(even)::before {
+  left: auto;
+  right: 20px;
+  background: rgba(139, 196, 245, 0.3);
+  border-color: rgba(139, 196, 245, 0.2);
+  transform: rotate(2deg);
+}
+
+/* Sketch shadow for all bordered elements */
+.sketch-theme [class*="border-"] {
+  border-style: dashed !important;
+}
+
+/* Override solid borders on specific critical elements */
+.sketch-theme button[class*="bg-gradient"],
+.sketch-theme button[class*="bg-indigo"],
+.sketch-theme button[class*="bg-emerald"],
+.sketch-theme button[class*="bg-rose"],
+.sketch-theme button[class*="bg-amber"],
+.sketch-theme button[class*="bg-orange"],
+.sketch-theme button[class*="bg-red"],
+.sketch-theme button[class*="bg-purple"] {
+  border-style: solid !important;
+}
+
+/* ═══════════════════════════════════════════
+   SKETCH PROGRESS BARS — Crayon fill
+   ═══════════════════════════════════════════ */
+
+.sketch-theme .h-full[class*="bg-gradient-to-r"],
+.sketch-theme .h-full[class*="bg-gradient-to"],
+.sketch-theme [class*="rounded-full"][class*="bg-gradient"] {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 3px,
+    rgba(255,255,255,0.15) 3px,
+    rgba(255,255,255,0.15) 6px
+  ),
+  var(--tw-gradient-stops, linear-gradient(to right, currentColor, currentColor)) !important;
+}
+
+/* Sketch-style progress bar containers */
+.sketch-theme .h-2,
+.sketch-theme .h-2\.5,
+.sketch-theme .h-3,
+.sketch-theme .h-1\.5 {
+  border: 1.5px dashed rgba(120, 100, 60, 0.15) !important;
+  background-color: rgba(220, 210, 190, 0.3) !important;
+}
+
+/* ═══════════════════════════════════════════
+   GRID PATTERN → NOTEBOOK LINES
+   ═══════════════════════════════════════════ */
+
+.sketch-theme .grid-pattern {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 29px,
+      rgba(140, 170, 210, 0.15) 29px,
+      rgba(140, 170, 210, 0.15) 30px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(210, 100, 100, 0.12) 0px,
+      rgba(210, 100, 100, 0.12) 1px,
+      transparent 1px
+    ) !important;
+  background-size: 100% 30px, 60px 100% !important;
+  background-color: transparent !important;
+}
+
+/* ═══════════════════════════════════════════
+   FLOATING ORBS → INK SPLATTER BLOBS
+   ═══════════════════════════════════════════ */
+
+.sketch-theme .animate-float-slow,
+.sketch-theme .animate-float-medium {
+  border-radius: 40% 60% 55% 45% / 55% 40% 60% 45% !important;
+  mix-blend-mode: multiply !important;
+  opacity: 0.08 !important;
+  filter: blur(80px) saturate(1.5) !important;
+}
+
+.sketch-theme .animate-pulse-glow {
+  animation: sketch-blob-morph 12s ease-in-out infinite,
+             pulse-glow 4s ease-in-out infinite !important;
+}
+
+@keyframes sketch-blob-morph {
+  0%, 100% { border-radius: 40% 60% 55% 45% / 55% 40% 60% 45%; }
+  25% { border-radius: 55% 45% 40% 60% / 45% 55% 45% 55%; }
+  50% { border-radius: 45% 55% 60% 40% / 60% 45% 55% 40%; }
+  75% { border-radius: 60% 40% 45% 55% / 40% 60% 40% 60%; }
+}
+
+/* ═══════════════════════════════════════════
+   SHIMMER LINE → PENCIL SCRATCH LINE
+   ═══════════════════════════════════════════ */
+
+.sketch-theme .animate-shimmer-line {
+  height: 3px !important;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    currentColor 2px,
+    transparent 4px,
+    currentColor 8px,
+    transparent 10px
+  ) !important;
+  animation: pencil-scratch 4s linear infinite !important;
+  opacity: 0.25;
+}
+
+@keyframes pencil-scratch {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* ═══════════════════════════════════════════
+   ICON CONTAINERS — Sketchy circles
+   ═══════════════════════════════════════════ */
+
+.sketch-theme [class*="rounded-2xl"][class*="flex"][class*="items-center"][class*="justify-center"][class*="shadow-"] {
+  border: 2.5px solid currentColor !important;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2) !important;
+  border-style: solid !important;
+}
+
+/* ═══════════════════════════════════════════
+   SCROLLBARS — Pencil marks
+   ═══════════════════════════════════════════ */
+
+.sketch-theme ::-webkit-scrollbar { width: 6px; }
+.sketch-theme ::-webkit-scrollbar-track {
+  background: transparent;
+  border-left: 1.5px dashed rgba(120, 100, 60, 0.1);
+}
+.sketch-theme ::-webkit-scrollbar-thumb {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(200, 180, 120, 0.3),
+    rgba(200, 180, 120, 0.3) 4px,
+    transparent 4px,
+    transparent 6px
+  );
+  border-radius: 10px;
+}
+
+/* ═══════════════════════════════════════════
+   MODALS — Pinned notes (overridden above)
+   ═══════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════
+   TEXT STYLING — hand-scribbled feel
+   ═══════════════════════════════════════════ */
+
+.sketch-theme .text-4xl,
+.sketch-theme .text-3xl,
+.sketch-theme .text-5xl {
+  font-family: var(--font-sketch-heading), 'Caveat', cursive !important;
+  letter-spacing: 0.02em;
+}
+
+.sketch-theme .text-xs,
+.sketch-theme .text-sm {
+  font-family: var(--font-sketch-body), 'Patrick Hand', cursive !important;
+  font-size: calc(1em + 1px) !important;
+}
+
+/* Uppercase tracking labels — marker style */
+.sketch-theme .uppercase {
+  font-family: var(--font-sketch-heading), 'Caveat', cursive !important;
+  letter-spacing: 0.12em !important;
+}
+
+/* Font mono → still sketchy */
+.sketch-theme .font-mono {
+  font-family: var(--font-sketch-body), 'Patrick Hand', cursive !important;
+}
+
+/* ═══════════════════════════════════════════
+   SUBTLE TILT ON CARD GRIDS
+   ═══════════════════════════════════════════ */
+
+.sketch-theme .grid > *:nth-child(1) { transform: rotate(-0.3deg); }
+.sketch-theme .grid > *:nth-child(2) { transform: rotate(0.4deg); }
+.sketch-theme .grid > *:nth-child(3) { transform: rotate(-0.2deg); }
+.sketch-theme .grid > *:nth-child(4) { transform: rotate(0.5deg); }
+.sketch-theme .grid > *:nth-child(5) { transform: rotate(-0.4deg); }
+.sketch-theme .grid > *:nth-child(6) { transform: rotate(0.3deg); }
+
+/* ═══════════════════════════════════════════
+   HOVER STATES — Sketch lift
+   ═══════════════════════════════════════════ */
+
+.sketch-theme .glass-card:hover {
+  transform: translate(-1px, -2px) rotate(0deg) !important;
+  box-shadow: 5px 5px 0px rgba(0,0,0,0.18) !important;
+}
+
+/* ═══════════════════════════════════════════
+   DECORATIVE — Corner doodles
+   ═══════════════════════════════════════════ */
+
+/* Add a subtle asterisk/star doodle to top-right of section headers */
+.sketch-theme section > h2::before {
+  content: '✦';
+  margin-right: 4px;
+  opacity: 0.25;
+  font-size: 0.6em;
+}
+
+/* ═══════════════════════════════════════════
+   ORIGINAL ANIMATIONS (kept & enhanced)
+   ═══════════════════════════════════════════ */
+
 @keyframes float-slow {
   0%, 100% { transform: translate(0, 0) scale(1); }
   25% { transform: translate(30px, -20px) scale(1.05); }
@@ -162,17 +831,16 @@
   100% { background-position: 0% 50%; }
 }
 
-/* Reusable Animation Classes */
 .animate-float-slow { animation: float-slow 20s ease-in-out infinite; }
 .animate-float-medium { animation: float-medium 14s ease-in-out infinite; }
 .animate-pulse-glow { animation: pulse-glow 4s ease-in-out infinite; }
 .animate-shimmer-line { animation: shimmer-line 3s ease-in-out infinite; }
-.animate-gradient { 
+.animate-gradient {
   background-size: 200% 200%;
-  animation: gradient-shift 6s ease infinite; 
+  animation: gradient-shift 6s ease infinite;
 }
 
-/* Glassmorphism Card Base */
+/* Original glass cards kept as base, overridden by sketch-theme */
 .glass-card {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(20px);
@@ -195,7 +863,7 @@
 
 /* Grid pattern overlay */
 .grid-pattern {
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
   background-size: 3rem 3rem;
