@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Activity, Baby, CloudRain, HeartPulse, Brain, AlertCircle, PhoneCall, CheckCircle2, ArrowLeft, Sparkles, MessageCircleHeart, ChevronDown, RefreshCw } from 'lucide-react';
+import { Search, Activity, Baby, CloudRain, HeartPulse, Brain, AlertCircle, PhoneCall, CheckCircle2, ArrowLeft, Sparkles, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getTranslations } from '@/lib/translations';
 
@@ -88,6 +88,7 @@ export default function RiskCheck() {
     distance: '<5km', road: '', weather: '',
     painType: [] as string[], bleeding: false, bleedingIntensity: '',
     dizziness: false, vomiting: false, swelling: [] as string[],
+    lakshan: [] as string[],
     anxiety: 3, stress: 3, sleep: ''
   });
 
@@ -130,10 +131,20 @@ export default function RiskCheck() {
   const checkHighRiskTrigger = (level: string) => {
     if (level === 'HIGH') {
       const existing = JSON.parse(localStorage.getItem('maasaheli_alerts') || '[]');
-      localStorage.setItem('maasaheli_alerts', JSON.stringify([
-        ...existing,
-        { patientId: selectedPatient?.id, name: selectedPatient?.name, timestamp: new Date().toISOString() }
-      ]));
+      const alreadyExists = existing.some((a: any) => a.patientId === selectedPatient?.id);
+      if (!alreadyExists) {
+        localStorage.setItem('maasaheli_alerts', JSON.stringify([
+          ...existing,
+          {
+            patientId: selectedPatient?.id,
+            name: selectedPatient?.name,
+            timestamp: new Date().toISOString(),
+            lakshan: formData.lakshan,
+            reason: formData.lakshan[0] || 'High Risk',
+            bp: formData.systolic ? `${formData.systolic}/${formData.diastolic}` : '',
+          }
+        ]));
+      }
     }
   };
 
@@ -298,48 +309,17 @@ export default function RiskCheck() {
               </div>
             </div>
 
-            {/* ====== COMPANION AI — FULL PAGE CTA ====== */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <button
-                onClick={() => {
-                  // Store risk data so companion page can auto-load it
-                  sessionStorage.setItem('companion_risk_result', JSON.stringify({
-                    riskResult: result,
-                    patientName: selectedPatient?.name,
-                    patientWeeks: selectedPatient?.weeks
-                  }));
-                  router.push('/asha/companion');
-                }}
-                className="w-full glass-card bg-gradient-to-r from-indigo-500/15 to-purple-500/10 p-6 rounded-3xl border border-indigo-500/25 flex items-center gap-4 text-left relative overflow-hidden group hover:border-indigo-500/50 transition-all hover:shadow-[0_0_40px_-10px_rgba(99,102,241,0.3)]"
+            {/* Hospital Alert Banner for HIGH risk */}
+            {result.risk_level === 'HIGH' && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                className="p-4 glass-card rounded-2xl border border-rose-500/30 bg-rose-500/8"
               >
-                <div className="absolute -right-8 -top-8 w-48 h-48 bg-indigo-500/10 rounded-full blur-[60px] group-hover:bg-indigo-500/20 transition-all duration-700 pointer-events-none"></div>
-                
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-[0_0_30px_-5px_rgba(99,102,241,0.5)] shrink-0 relative z-10 group-hover:shadow-[0_0_45px_-5px_rgba(99,102,241,0.7)] transition-shadow">
-                  <Sparkles className="w-7 h-7" />
-                </div>
-
-                <div className="relative z-10 flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-xl font-black text-white">Companion AI</h3>
-                    <span className="text-[9px] bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-black uppercase tracking-wider">Grok Live</span>
-                  </div>
-                  <p className="text-sm text-indigo-300/80 font-medium leading-snug">
-                    यह warning क्यों आई? Family को क्या बोलें? अगला कदम क्या है?
-                  </p>
-                  <p className="text-xs text-slate-500 mt-1">Grok AI Hindi में समझाएगा — अभी tap करें</p>
-                </div>
-
-                <div className="relative z-10 shrink-0">
-                  <div className="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center group-hover:bg-indigo-500/40 group-hover:border-indigo-500 transition-all">
-                    <ChevronDown className="w-4 h-4 text-indigo-400 -rotate-90" />
-                  </div>
-                </div>
-              </button>
-            </motion.div>
+                <p className="text-rose-300 font-bold text-sm flex items-center gap-2 mb-1">
+                  <AlertCircle className="w-4 h-4" /> अस्पताल को सूचित कर दिया गया ✅
+                </p>
+                <p className="text-xs text-slate-400">यह मरीज़ का रिकॉर्ड अस्पताल के Hospital Dashboard में दिख रहा है।</p>
+              </motion.div>
+            )}
 
 
             {/* Action Buttons */}
@@ -378,9 +358,9 @@ export default function RiskCheck() {
           </button>
           <div>
             <h1 className="text-lg font-bold text-white flex items-center gap-2">
-              <Brain className="w-5 h-5 text-pink-400" /> {t.title}
+              <Brain className="w-5 h-5 text-pink-400" /> स्वास्थ्य जाँच करें
             </h1>
-            <p className="text-xs text-slate-500">{t.subtitle}</p>
+            <p className="text-xs text-slate-500">लक्षण बताएं — खतरा पता करें</p>
           </div>
         </div>
       </header>
@@ -432,7 +412,7 @@ export default function RiskCheck() {
               {/* A. VITALS */}
               <section className="glass-card rounded-2xl p-5 space-y-4">
                 <h3 className="font-bold text-white flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-rose-400" /> {t.vitals_title}
+                  <Activity className="w-5 h-5 text-rose-400" /> माप (BP, तापमान आदि)
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   {[
@@ -466,7 +446,7 @@ export default function RiskCheck() {
               {/* B. PREGNANCY */}
               <section className="glass-card rounded-2xl p-5 space-y-4">
                 <h3 className="font-bold text-white flex items-center gap-2">
-                  <Baby className="w-5 h-5 text-purple-400" /> {t.pregnancy_title}
+                  <Baby className="w-5 h-5 text-purple-400" /> बच्चे की जानकारी
                 </h3>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t.fetal_kicks}</label>
@@ -493,24 +473,72 @@ export default function RiskCheck() {
                 ))}
               </section>
 
+              {/* ── LAKSHAN (SYMPTOMS) — new section ── */}
+              <section className="glass-card rounded-2xl p-5 space-y-4">
+                <h3 className="font-bold text-white flex items-center gap-2">
+                  <HeartPulse className="w-5 h-5 text-rose-400" /> क्या लक्षण दिख रहे हैं?
+                </h3>
+                <p className="text-xs text-slate-500">जो भी दिखे उस पर टैप करें — एक से ज़्यादा चुन सकती हैं</p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: '🦵 पैरों में सूजन', key: 'पैरों में सूजन' },
+                    { label: '😞 सिर दर्द', key: 'सिर दर्द' },
+                    { label: '👁 धुंधला दिखना', key: 'धुंधला दिखना' },
+                    { label: '🤢 उल्टी आना', key: 'उल्टी आना' },
+                    { label: '🩸 खून आना', key: 'योनि से खून आना' },
+                    { label: '💤 बहुत थकान', key: 'बहुत थकान' },
+                    { label: '🤒 बुखार', key: 'बुखार' },
+                    { label: '🫀 बहुत कम हलचल', key: 'बच्चे की बहुत कम हलचल' },
+                    { label: '🥶 ठंड लगना', key: 'ठंड लगना' },
+                    { label: '😰 चक्कर आना', key: 'चक्कर आना' },
+                    { label: '✋ हाथों में सूजन', key: 'हाथों में सूजन' },
+                    { label: '😮 सांस लेने में तकलीफ', key: 'सांस लेने में तकलीफ' },
+                  ].map(({ label, key }) => (
+                    <button key={key}
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          lakshan: prev.lakshan.includes(key)
+                            ? prev.lakshan.filter(l => l !== key)
+                            : [...prev.lakshan, key]
+                        }));
+                      }}
+                      className={`px-3 py-2 rounded-xl text-xs font-bold border transition ${
+                        formData.lakshan.includes(key)
+                          ? 'bg-rose-500/20 border-rose-500/40 text-rose-300'
+                          : 'glass-card border-white/8 text-slate-400 hover:text-white hover:border-white/20'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                {formData.lakshan.length > 0 && (
+                  <div className="p-2.5 glass-card rounded-xl border border-rose-500/15">
+                    <p className="text-[10px] text-rose-400 font-bold uppercase tracking-wider mb-1">चुने गए लक्षण</p>
+                    <p className="text-xs text-slate-300">{formData.lakshan.join(' • ')}</p>
+                  </div>
+                )}
+              </section>
+
               {/* C. ENVIRONMENT */}
               <section className="glass-card rounded-2xl p-5 space-y-4">
                 <h3 className="font-bold text-white flex items-center gap-2">
-                  <CloudRain className="w-5 h-5 text-blue-400" /> {t.env_title}
+                  <CloudRain className="w-5 h-5 text-blue-400" /> घर से अस्पताल कितनी दूर है?
                 </h3>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t.phc_distance}</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">PHC / अस्पताल दूरी</label>
                   <select
                     value={formData.distance}
                     onChange={e => setFormData({ ...formData, distance: e.target.value })}
                     className="w-full px-3 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl outline-none text-slate-200 text-sm"
                   >
-                    {['<5km', '5-15km', '15-30km', '>30km'].map(o => <option key={o} value={o}>{o}</option>)}
+                    {['<5km — पास है', '5-15km — थोड़ा दूर', '15-30km — दूर है', '>30km — बहुत दूर'].map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
                 {[
-                  { label: t.road_condition, field: 'road', opts: ['Paved', 'Kuccha', 'Flood Risk'] },
-                  { label: t.weather, field: 'weather', opts: ['Clear', 'Rain', 'Heavy Rain', 'Flood'] },
+                  { label: 'सड़क कैसी है?', field: 'road', opts: ['पक्की सड़क', 'कच्ची सड़क', 'बाढ़ का खतरा'] },
+                  { label: 'मौसम कैसा है?', field: 'weather', opts: ['साफ मौसम', 'बारिश', 'तेज बारिश', 'बाढ़'] },
                 ].map(({ label, field, opts }) => (
                   <div key={field} className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{label}</label>
@@ -527,7 +555,7 @@ export default function RiskCheck() {
               </section>
 
               {/* D. SYMPTOMS */}
-              <section className="glass-card rounded-2xl p-5 space-y-4">
+              <section className="glass-card rounded-2xl p-5 space-y-4" style={{display:'none'}}>
                 <h3 className="font-bold text-white flex items-center gap-2">
                   <HeartPulse className="w-5 h-5 text-amber-400" /> {t.symptoms_title}
                 </h3>
@@ -588,10 +616,10 @@ export default function RiskCheck() {
                 </div>
               </section>
 
-              {/* E. EMOTIONAL */}
+              {/* E. EMOTIONAL / मानसिक स्थिति */}
               <section className="glass-card rounded-2xl p-5 space-y-5">
                 <h3 className="font-bold text-white flex items-center gap-2">
-                  <Brain className="w-5 h-5 text-teal-400" /> {t.emotional_title}
+                  <Brain className="w-5 h-5 text-teal-400" /> माँ का मन कैसा है?
                 </h3>
                 {[
                   { label: t.anxiety, field: 'anxiety' as const, color: 'teal' },
@@ -644,9 +672,9 @@ export default function RiskCheck() {
                   <Brain className="w-6 h-6" />
                 </motion.div>
               ) : (
-                <><Sparkles className="w-5 h-5" /> {t.submit_btn}</>
+                <><Sparkles className="w-5 h-5" /> जाँच शुरू करें</>
               )}
-              {loading && <span>{t.analyzing}</span>}
+              {loading && <span>जाँच हो रही है...</span>}
             </button>
           </div>
         </div>
