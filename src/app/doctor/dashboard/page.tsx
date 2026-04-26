@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Stethoscope, Calendar, AlertTriangle, Users, Activity,
   Droplets, FileText, Pill, Mic, ChevronRight, Sparkles,
-  RefreshCw, X, Scale, Baby, CheckCircle2, Clock, AlertCircle
+  RefreshCw, X, Scale, Baby, CheckCircle2, Clock, AlertCircle, Phone, Ambulance
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -218,6 +218,116 @@ function DecisionSupportModal({ patient, onClose }: { patient: any, onClose: () 
   );
 }
 
+// ─── PATIENT DETAIL MODAL ────────────────────────────────────────────────────
+function PatientDetailModal({ patient, onClose }: { patient: any, onClose: () => void }) {
+  const [ambulanceRequested, setAmbulanceRequested] = useState(false);
+
+  const requestAmbulance = () => {
+    setAmbulanceRequested(true);
+    setTimeout(() => {
+      alert(`🚨 HOSPITAL AUTHORITY ALERT\n\nAmbulance dispatched for ${patient?.name || 'Patient'}.\nEmergency Response Team notified!`);
+    }, 400);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-lg bg-[#0a0f1e] border border-blue-500/20 rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-white/5 flex items-center justify-between sticky top-0 bg-[#0a0f1e] z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+              <Users className="w-5 h-5 text-blue-400" />
+            </div>
+            <div>
+              <h2 className="font-bold text-white">Patient Record Details</h2>
+              <p className="text-xs text-blue-300">Logged by ASHA Worker</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 glass-card rounded-xl hover:bg-white/10 transition"><X className="w-4 h-4" /></button>
+        </div>
+
+        <div className="p-6 space-y-4">
+          {/* Header Info */}
+          <div className="p-4 rounded-2xl bg-slate-800/50 border border-white/5 flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-black text-white">{patient?.name || 'Unknown Patient'}</h3>
+              <p className="text-xs text-slate-400">ID: {patient?.id || 'N/A'} • Gestation: {patient?.weeks ? `${patient.weeks}W` : 'N/A'}</p>
+            </div>
+            <div className="text-center bg-[#050711] px-4 py-2 rounded-xl border border-white/5">
+              <span className="block text-[10px] text-slate-500 font-bold uppercase tracking-widest">Risk Score</span>
+              <span className={`text-xl font-black ${patient?.isHighRisk ? 'text-rose-400' : 'text-emerald-400'}`}>{patient?.score || '-'}</span>
+            </div>
+          </div>
+
+          {/* Vitals Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl">
+              <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Blood Pressure</span>
+              <span className="text-sm font-bold text-slate-200">
+                {patient?.sysBP && patient?.diaBP ? `${patient.sysBP}/${patient.diaBP} mmHg` : 'N/A'}
+              </span>
+            </div>
+            <div className="p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl">
+              <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Hemoglobin (Hb)</span>
+              <span className="text-sm font-bold text-slate-200">
+                {patient?.hb ? `${patient.hb} g/dL` : 'N/A'}
+              </span>
+            </div>
+            <div className="p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl">
+              <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Blood Sugar</span>
+              <span className="text-sm font-bold text-slate-200">
+                {patient?.sugar ? `${patient.sugar} mg/dL` : 'N/A'}
+              </span>
+            </div>
+            <div className="p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl">
+              <span className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Urine Protein</span>
+              <span className="text-sm font-bold text-slate-200">
+                {patient?.urine || 'N/A'}
+              </span>
+            </div>
+          </div>
+
+          {/* Symptoms */}
+          {(patient?.symptoms && patient.symptoms.length > 0) && (
+            <div className="p-4 rounded-2xl bg-amber-500/8 border border-amber-500/15">
+              <span className="block text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2">Reported Symptoms</span>
+              <div className="flex flex-wrap gap-2">
+                {patient.symptoms.map((s: string, idx: number) => (
+                  <span key={idx} className="text-xs bg-amber-500/20 text-amber-300 font-bold px-2.5 py-1 rounded-md border border-amber-500/30 shadow-sm">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* High Priority Actions */}
+          <div className="grid grid-cols-2 gap-3 pt-2">
+            <button className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 hover:bg-indigo-500/20 transition group glass-card">
+              <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center group-hover:scale-110 transition">
+                <Phone className="w-5 h-5 text-indigo-400" />
+              </div>
+              <span className="text-xs font-bold text-indigo-300">Call ASHA Worker</span>
+            </button>
+            <button 
+              onClick={requestAmbulance}
+              disabled={ambulanceRequested}
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl transition group border ${ambulanceRequested ? 'bg-rose-500 border-rose-400 opacity-90' : 'bg-rose-500/10 border-rose-500/30 hover:bg-rose-500/20 glass-card'}`}
+            >
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center transition ${ambulanceRequested ? 'bg-white/20' : 'bg-rose-500/20 group-hover:scale-110'}`}>
+                <Ambulance className={`w-5 h-5 ${ambulanceRequested ? 'text-white' : 'text-rose-400'}`} />
+              </div>
+              <span className={`text-xs font-bold ${ambulanceRequested ? 'text-white' : 'text-rose-300'}`}>
+                {ambulanceRequested ? 'Ambulance Alerted!' : 'PHC Bula Lo'}
+              </span>
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // ─── MAIN DASHBOARD ────────────────────────────────────────────────────────
 export default function DoctorDashboard() {
   const router = useRouter();
@@ -225,6 +335,7 @@ export default function DoctorDashboard() {
   const [showHandoff, setShowHandoff] = useState(false);
   const [showDecision, setShowDecision] = useState(false);
   const [decisionPatient, setDecisionPatient] = useState<any>(null);
+  const [selectedDetailPatient, setSelectedDetailPatient] = useState<any>(null);
   const [deliveryPatients, setDeliveryPatients] = useState<any[]>([]);
 
   useEffect(() => {
@@ -288,6 +399,7 @@ export default function DoctorDashboard() {
       {/* Modals */}
       {showHandoff && <ShiftHandoffModal patients={displayPatients} onClose={() => setShowHandoff(false)} />}
       {showDecision && <DecisionSupportModal patient={decisionPatient} onClose={() => setShowDecision(false)} />}
+      {selectedDetailPatient && <PatientDetailModal patient={selectedDetailPatient} onClose={() => setSelectedDetailPatient(null)} />}
 
       <div className="relative z-10 p-4 md:p-8">
         {/* Header */}
@@ -327,8 +439,8 @@ export default function DoctorDashboard() {
               <div className="space-y-3">
                 {displayPatients.map((p, idx) => (
                   <motion.div key={idx} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.06 }}
-                    className={`p-4 rounded-2xl border transition-all flex items-center justify-between ${p.isHighRisk ? 'bg-rose-500/5 border-rose-500/20 hover:bg-rose-500/8' : 'glass-card hover:bg-white/[0.04]'}`}>
-                    <div className="flex items-center gap-4">
+                    className={`p-4 rounded-2xl border transition-all flex items-center justify-between ${p.isHighRisk ? 'bg-rose-500/5 border-rose-500/20 hover:bg-rose-500/10 hover:shadow-[0_0_15px_-3px_rgba(244,63,94,0.2)]' : 'glass-card hover:bg-white/[0.04]'}`}>
+                    <button onClick={() => setSelectedDetailPatient(p)} className="flex items-center gap-4 text-left flex-1 hover:opacity-80 transition cursor-pointer">
                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-black text-xl ${p.isHighRisk ? 'bg-rose-500/20 text-rose-400 border border-rose-500/20' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20'}`}>
                         {p.score}
                       </div>
@@ -336,7 +448,7 @@ export default function DoctorDashboard() {
                         <h3 className="font-bold text-slate-200">{p.name}</h3>
                         <p className="text-xs text-slate-500">{p.id} • {p.weeks ? `${p.weeks}W` : 'Unknown'}</p>
                       </div>
-                    </div>
+                    </button>
                     <div className="flex items-center gap-2">
                       {p.isHighRisk && <span className="text-[10px] font-black text-rose-400 bg-rose-500/10 px-2 py-1 rounded-lg uppercase tracking-wider border border-rose-500/20">SEVERE</span>}
                       <button onClick={() => openDecision(p)}
